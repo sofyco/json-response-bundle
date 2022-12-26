@@ -50,7 +50,7 @@ jobs:
                     restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
 
             -   name: Run static analyse
-                run: vendor/bin/phpstan analyse --no-progress --xdebug
+                run: vendor/bin/phpstan analyse --no-progress
 
     phpunit:
         needs: build

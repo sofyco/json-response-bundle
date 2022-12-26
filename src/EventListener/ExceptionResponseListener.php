@@ -6,14 +6,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Messenger;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintViolationInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator;
 
-final class ExceptionResponseListener
+final readonly class ExceptionResponseListener
 {
-    public function __construct(private readonly SerializerInterface $serializer)
+    public function __construct(private SerializerInterface $serializer)
     {
     }
 
@@ -22,15 +21,15 @@ final class ExceptionResponseListener
         $data = [];
         $throwable = $event->getThrowable();
 
-        if ($throwable instanceof HandlerFailedException) {
+        if ($throwable instanceof Messenger\Exception\HandlerFailedException) {
             $throwable = \current($throwable->getNestedExceptions()) ?: $throwable;
         }
 
         $statusCode = $this->getStatusCode($throwable);
+        $violations = $this->getValidationViolations($throwable);
 
-        if ($throwable instanceof ValidationFailedException) {
-            /** @var ConstraintViolationInterface $violation */
-            foreach ($throwable->getViolations() as $violation) {
+        if (null !== $violations) {
+            foreach ($violations as $violation) {
                 $data['errors'][$violation->getPropertyPath()] = [
                     'message' => $violation->getMessage(),
                     'parameters' => $violation->getParameters(),
@@ -45,7 +44,7 @@ final class ExceptionResponseListener
 
     private function getStatusCode(\Throwable $throwable): int
     {
-        if ($throwable instanceof ValidationFailedException) {
+        if (null !== $this->getValidationViolations($throwable)) {
             return Response::HTTP_UNPROCESSABLE_ENTITY;
         }
 
@@ -54,5 +53,14 @@ final class ExceptionResponseListener
         }
 
         return Response::HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    private function getValidationViolations(\Throwable $throwable): ?Validator\ConstraintViolationListInterface
+    {
+        if ($throwable instanceof Messenger\Exception\ValidationFailedException || $throwable instanceof Validator\Exception\ValidationFailedException) {
+            return $throwable->getViolations();
+        }
+
+        return null;
     }
 }
