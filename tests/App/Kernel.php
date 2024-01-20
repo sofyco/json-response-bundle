@@ -41,8 +41,8 @@ final class Kernel extends \Symfony\Component\HttpKernel\Kernel
     {
         return match ($request->getMethod()) {
             Request::METHOD_GET => $request->query->all(),
-            Request::METHOD_POST => \json_decode((string) $request->getContent(), true),
             Request::METHOD_PUT => throw $this->getValidationException(),
+            Request::METHOD_POST => \json_decode((string) $request->getContent(), true),
             Request::METHOD_PATCH => $this->createEnvelope(),
             Request::METHOD_OPTIONS => throw new NotFoundHttpException('Page not found'),
             default => throw new \InvalidArgumentException('Something wrong'),
