@@ -22,7 +22,7 @@ final readonly class ExceptionResponseListener
         $throwable = $event->getThrowable();
 
         if ($throwable instanceof Messenger\Exception\HandlerFailedException) {
-            $throwable = \current($throwable->getNestedExceptions()) ?: $throwable;
+            $throwable = \current($throwable->getWrappedExceptions()) ?: $throwable;
         }
 
         $statusCode = $this->getStatusCode($throwable);

@@ -2,6 +2,8 @@
 
 namespace Sofyco\Bundle\JsonResponseBundle\Tests\App;
 
+use Sofyco\Bundle\JsonResponseBundle\JsonResponseBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +23,8 @@ final class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function registerBundles(): iterable
     {
-        yield new \Symfony\Bundle\FrameworkBundle\FrameworkBundle();
-        yield new \Sofyco\Bundle\JsonResponseBundle\JsonResponseBundle();
+        yield new FrameworkBundle();
+        yield new JsonResponseBundle();
     }
 
     protected function configureContainer(ContainerConfigurator $container): void
