@@ -30,10 +30,7 @@ final readonly class ExceptionResponseListener
 
         if (null !== $violations) {
             foreach ($violations as $violation) {
-                $data['errors'][$violation->getPropertyPath()] = [
-                    'message' => $violation->getMessage(),
-                    'parameters' => $violation->getParameters(),
-                ];
+                $data[$violation->getPropertyPath()] = $violation->getMessage();
             }
         } else {
             $data['message'] = $throwable->getMessage();
