@@ -53,7 +53,7 @@ final class ResponseListenerTest extends WebTestCase
     {
         $response = $this->sendRequest(Request::METHOD_PUT);
 
-        $message = '{"name":{"Name error"},"email":{"Email error"}}';
+        $message = '{"name":"Name error","email":"Email error"}';
 
         self::assertSame($message, $response->getContent());
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
