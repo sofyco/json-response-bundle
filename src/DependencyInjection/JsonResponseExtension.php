@@ -16,14 +16,14 @@ final class JsonResponseExtension extends Extension
     {
         $this->addListener($container, EnvelopeResponseListener::class, KernelEvents::VIEW);
         $this->addListener($container, ControllerResponseListener::class, KernelEvents::VIEW);
-        $this->addListener($container, ExceptionResponseListener::class, KernelEvents::EXCEPTION);
+        $this->addListener($container, ExceptionResponseListener::class, KernelEvents::EXCEPTION, -1);
     }
 
-    private function addListener(ContainerBuilder $container, string $className, string $eventName): void
+    private function addListener(ContainerBuilder $container, string $className, string $eventName, int $priority = 0): void
     {
         $listener = new Definition($className);
         $listener->setAutowired(true);
-        $listener->addTag('kernel.event_listener', ['event' => $eventName]);
+        $listener->addTag('kernel.event_listener', ['event' => $eventName, 'priority' => $priority]);
 
         $container->setDefinition($className, $listener);
     }
